@@ -1,0 +1,9 @@
+include: _quasar_ruler_base.yaml
+task: ruler_qa_hotpot_quasar
+custom_dataset: !function quasar_ruler.get_hotpotqa
+process_results: !function quasar_ruler.process_results_part
+generation_kwargs:
+  do_sample: false
+  temperature: 0.0
+  max_gen_toks: 32
+  until: []

@@ -1,0 +1,29 @@
+# Healing (quantization-aware distillation) of Qwen3-4B-Thinking-2507 at INT2/3/4.
+# One cell per run; choose it on the command line:
+#   torchrun --standalone --nproc_per_node 8 -m quasar.train --recipe configs/heal_qwen3_4b_thinking.yaml \
+#       --method {quasar,standard,lsq,denoising,bitdistiller} --bits {2,3,4} --train_data TRAIN.jsonl --eval_data EVAL.jsonl --out_dir OUT
+# Global batch 32 = 4 per device x 1 accumulation step x 8 GPUs; on fewer GPUs raise grad_accum to keep it.
+
+model_path: Qwen/Qwen3-4B-Thinking-2507
+max_seq_len: 4096
+
+method: quasar
+format: int
+bits: 4
+
+objective: kd  # KL(teacher || student), T = 1, on assistant tokens; the teacher is the BF16 model_path
+freeze: true   # train only the quantized projections
+
+# One learning rate per bit width, shared by every method.
+learning_rate: {4: 2.0e-5, 3: 3.0e-5, 2: 5.0e-5}
+per_device_batch_size: 4
+grad_accum: 1
+max_steps: 4096
+warmup_ratio: 0.01
+max_grad_norm: 1.0
+fp32_master: false  # the learning rates were tuned with bf16 weights and AdamW state
+attn_implementation: flash_attention_2
+seed: 1234
+
+logging_steps: 1
+eval_steps: 128

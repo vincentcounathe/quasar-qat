@@ -1,0 +1,3 @@
+include: _quasar_ruler_base.yaml
+task: niah_multikey_3_quasar
+custom_dataset: !function quasar_ruler.niah_multikey_3

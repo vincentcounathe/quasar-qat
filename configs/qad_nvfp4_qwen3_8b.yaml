@@ -1,0 +1,28 @@
+# NVFP4 (W4A16) quantization-aware distillation of Qwen3-8B on its own responses: Standard QAT vs QUASAR.
+#   torchrun --standalone --nproc_per_node 8 -m quasar.train --recipe configs/qad_nvfp4_qwen3_8b.yaml \
+#       --method {quasar,standard} --train_data TRAIN.jsonl --eval_data EVAL.jsonl --out_dir OUT
+# Global batch 32 = 1 per device x 4 accumulation steps x 8 GPUs (3121 steps = one pass over 99,872 rows);
+# on fewer GPUs raise grad_accum to keep it.
+
+model_path: Qwen/Qwen3-8B
+max_seq_len: 8192  # longer rows are right-truncated
+
+method: quasar
+format: nvfp4
+bits: 4
+
+objective: kd  # KL(teacher || student), T = 1, on assistant tokens; the teacher is the BF16 model_path
+freeze: true   # train only the quantized projections
+
+learning_rate: 1.0e-6
+per_device_batch_size: 1
+grad_accum: 4
+max_steps: 3121
+warmup_ratio: 0.01
+max_grad_norm: 1.0
+fp32_master: true  # fp32 weights and AdamW state; compute stays bf16
+attn_implementation: flash_attention_2
+seed: 42
+
+logging_steps: 4
+eval_steps: 128

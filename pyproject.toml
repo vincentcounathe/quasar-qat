@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quasar-qat"
+version = "0.1.0"
+description = "QUASAR: loss-aware clipping-range search for quantization-aware training of LLMs"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.11,<2.12",
+    "transformers==5.10.2",
+    "datasets>=5.0,<6",
+    "safetensors>=0.6",
+    "huggingface-hub>=1.5,<2",
+    "pyyaml>=6.0",
+]
+
+[project.urls]
+Paper = "https://arxiv.org/abs/2608.13966"
+Code = "https://github.com/vincentcounathe/quasar-qat"
+
+[project.optional-dependencies]
+eval = [
+    "vllm==0.26.0",
+    "lm-eval[ruler]==0.4.12",
+    "math-verify==0.5.2",
+]
+wandb = ["wandb>=0.28"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+include = ["quasar*"]
+
+[tool.setuptools.package-data]
+"quasar.eval" = ["ruler_tasks/*.yaml", "ruler_tasks/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: needs a CUDA GPU",
+    "slow: multi-process end-to-end runs (minutes on CPU); skip with -m 'not slow'",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "SIM", "I"]
+ignore = ["B905", "SIM118"]  # zip() without strict=; .keys() on non-dict readers

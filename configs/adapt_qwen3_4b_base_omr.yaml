@@ -1,0 +1,30 @@
+# Adaptation: supervised fine-tuning of Qwen3-4B-Base on OpenMathReasoning traces at INT2/3/4,
+# plus the full-precision reference (--method none).
+# One cell per run; choose it on the command line:
+#   torchrun --standalone --nproc_per_node 8 -m quasar.train --recipe configs/adapt_qwen3_4b_base_omr.yaml \
+#       --method {quasar,standard,lsq,denoising,bitdistiller,none} --bits {2,3,4} --train_data TRAIN.jsonl --eval_data EVAL.jsonl --out_dir OUT
+# Global batch 8 = 1 per device x 1 accumulation step x 8 GPUs; on fewer GPUs raise grad_accum to keep it.
+
+model_path: Qwen/Qwen3-4B-Base
+tokenizer_path: Qwen/Qwen3-4B-Instruct-2507  # its chat template renders the corpus (eos <|im_end|>)
+max_seq_len: 18432
+
+method: quasar
+format: int
+bits: 4
+
+objective: ce  # next-token cross-entropy on assistant tokens; no teacher
+freeze: false  # every parameter trains
+
+learning_rate: 5.0e-5  # all methods and bit widths
+per_device_batch_size: 1
+grad_accum: 1
+max_steps: 4096
+warmup_ratio: 0.01
+max_grad_norm: 1.0
+fp32_master: false  # the learning rate was tuned with bf16 weights and AdamW state
+attn_implementation: flash_attention_2
+seed: 1234
+
+logging_steps: 10
+eval_steps: 128
