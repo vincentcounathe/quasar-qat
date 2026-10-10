@@ -1,7 +1,7 @@
 # QUASAR
 
 <p align="center">
-  <a href="https://quasar-qat.github.io/"><img src="https://img.shields.io/badge/Project-Page-orange.svg" alt="Project page"></a>
+  <a href="https://quasar-qat.github.io/"><img src="https://img.shields.io/badge/Blog-Post-orange.svg" alt="Blog Post"></a>
   <a href="https://arxiv.org/abs/2608.13966"><img src="https://img.shields.io/badge/arXiv-2608.13966-b31b1b.svg?logo=arXiv" alt="arXiv"></a>
   <a href="https://huggingface.co/collections/QUASAR-QAT/all-quasar-models-6aab09fd2913ec22df0d5f15"><img src="https://img.shields.io/badge/Hugging%20Face-Checkpoints-blue.svg?logo=huggingface" alt="Hugging Face"></a>
 </p>
